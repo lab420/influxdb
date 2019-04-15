@@ -541,7 +541,7 @@ func (c *Client) FindResourceOrganizationID(ctx context.Context, rt influxdb.Res
 		if err != nil {
 			return influxdb.InvalidID(), err
 		}
-		return r.OrganizationID, nil
+		return r.OrgID, nil
 	case influxdb.VariablesResourceType:
 		r, err := c.FindVariableByID(ctx, id)
 		if err != nil {
