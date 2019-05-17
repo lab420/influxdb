@@ -5,6 +5,7 @@ import (
 	"context"
 	"sort"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	platform "github.com/influxdata/influxdb"
@@ -32,6 +33,7 @@ var organizationCmpOptions = cmp.Options{
 // OrganizationFields will include the IDGenerator, and organizations
 type OrganizationFields struct {
 	IDGenerator   platform.IDGenerator
+	TimeGenerator platform.TimeGenerator
 	Organizations []*platform.Organization
 }
 
@@ -99,6 +101,7 @@ func CreateOrganization(
 			name: "create organizations with empty set",
 			fields: OrganizationFields{
 				IDGenerator:   mock.NewIDGenerator(orgOneID, t),
+				TimeGenerator: mock.TimeGenerator{FakeValue: time.Date(2006, 5, 4, 1, 2, 3, 0, time.UTC)},
 				Organizations: []*platform.Organization{},
 			},
 			args: args{
@@ -114,6 +117,10 @@ func CreateOrganization(
 						Name:        "name1",
 						ID:          MustIDBase16(orgOneID),
 						Description: "desc1",
+						CRUDLog: platform.CRUDLog{
+							CreatedAt: time.Date(2006, 5, 4, 1, 2, 3, 0, time.UTC),
+							UpdatedAt: time.Date(2006, 5, 4, 1, 2, 3, 0, time.UTC),
+						},
 					},
 				},
 			},
@@ -121,7 +128,8 @@ func CreateOrganization(
 		{
 			name: "basic create organization",
 			fields: OrganizationFields{
-				IDGenerator: mock.NewIDGenerator(orgTwoID, t),
+				IDGenerator:   mock.NewIDGenerator(orgTwoID, t),
+				TimeGenerator: mock.TimeGenerator{FakeValue: time.Date(2006, 5, 4, 1, 2, 3, 0, time.UTC)},
 				Organizations: []*platform.Organization{
 					{
 						ID:   MustIDBase16(orgOneID),
@@ -144,6 +152,10 @@ func CreateOrganization(
 					{
 						ID:   MustIDBase16(orgTwoID),
 						Name: "organization2",
+						CRUDLog: platform.CRUDLog{
+							CreatedAt: time.Date(2006, 5, 4, 1, 2, 3, 0, time.UTC),
+							UpdatedAt: time.Date(2006, 5, 4, 1, 2, 3, 0, time.UTC),
+						},
 					},
 				},
 			},
@@ -151,7 +163,8 @@ func CreateOrganization(
 		{
 			name: "empty name",
 			fields: OrganizationFields{
-				IDGenerator: mock.NewIDGenerator(orgTwoID, t),
+				IDGenerator:   mock.NewIDGenerator(orgTwoID, t),
+				TimeGenerator: mock.TimeGenerator{FakeValue: time.Date(2006, 5, 4, 1, 2, 3, 0, time.UTC)},
 				Organizations: []*platform.Organization{
 					{
 						ID:   MustIDBase16(orgOneID),
@@ -177,7 +190,8 @@ func CreateOrganization(
 		{
 			name: "name only have spaces",
 			fields: OrganizationFields{
-				IDGenerator: mock.NewIDGenerator(orgTwoID, t),
+				IDGenerator:   mock.NewIDGenerator(orgTwoID, t),
+				TimeGenerator: mock.TimeGenerator{FakeValue: time.Date(2006, 5, 4, 1, 2, 3, 0, time.UTC)},
 				Organizations: []*platform.Organization{
 					{
 						ID:   MustIDBase16(orgOneID),
@@ -204,7 +218,8 @@ func CreateOrganization(
 		{
 			name: "names should be unique",
 			fields: OrganizationFields{
-				IDGenerator: mock.NewIDGenerator(orgTwoID, t),
+				IDGenerator:   mock.NewIDGenerator(orgTwoID, t),
+				TimeGenerator: mock.TimeGenerator{FakeValue: time.Date(2006, 5, 4, 1, 2, 3, 0, time.UTC)},
 				Organizations: []*platform.Organization{
 					{
 						ID:   MustIDBase16(orgOneID),
@@ -235,7 +250,8 @@ func CreateOrganization(
 		{
 			name: "create organization with no id",
 			fields: OrganizationFields{
-				IDGenerator: mock.NewIDGenerator(orgTwoID, t),
+				IDGenerator:   mock.NewIDGenerator(orgTwoID, t),
+				TimeGenerator: mock.TimeGenerator{FakeValue: time.Date(2006, 5, 4, 1, 2, 3, 0, time.UTC)},
 				Organizations: []*platform.Organization{
 					{
 						ID:   MustIDBase16(orgOneID),
@@ -257,6 +273,10 @@ func CreateOrganization(
 					{
 						ID:   MustIDBase16(orgTwoID),
 						Name: "organization2",
+						CRUDLog: platform.CRUDLog{
+							CreatedAt: time.Date(2006, 5, 4, 1, 2, 3, 0, time.UTC),
+							UpdatedAt: time.Date(2006, 5, 4, 1, 2, 3, 0, time.UTC),
+						},
 					},
 				},
 			},
@@ -828,6 +848,7 @@ func UpdateOrganization(
 		{
 			name: "update name",
 			fields: OrganizationFields{
+				TimeGenerator: mock.TimeGenerator{FakeValue: time.Date(2006, 5, 4, 1, 2, 3, 0, time.UTC)},
 				Organizations: []*platform.Organization{
 					{
 						ID:   MustIDBase16(orgOneID),
@@ -847,6 +868,9 @@ func UpdateOrganization(
 				organization: &platform.Organization{
 					ID:   MustIDBase16(orgOneID),
 					Name: "changed",
+					CRUDLog: platform.CRUDLog{
+						UpdatedAt: time.Date(2006, 5, 4, 1, 2, 3, 0, time.UTC),
+					},
 				},
 			},
 		},
@@ -923,6 +947,7 @@ func UpdateOrganization(
 		{
 			name: "update description",
 			fields: OrganizationFields{
+				TimeGenerator: mock.TimeGenerator{FakeValue: time.Date(2006, 5, 4, 1, 2, 3, 0, time.UTC)},
 				Organizations: []*platform.Organization{
 					{
 						ID:          MustIDBase16(orgOneID),
@@ -945,6 +970,9 @@ func UpdateOrganization(
 					ID:          MustIDBase16(orgOneID),
 					Name:        "organization1",
 					Description: "changed",
+					CRUDLog: platform.CRUDLog{
+						UpdatedAt: time.Date(2006, 5, 4, 1, 2, 3, 0, time.UTC),
+					},
 				},
 			},
 		},
